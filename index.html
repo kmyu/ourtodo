@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html ng-app='app' ng-controller='appCtrl'>
+<head>
+	<!-- <link rel="stylesheet" type="text/css" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+	<script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.2.18/angular.js'></script>
+	<script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.2.18/angular-route.js'></script>
+	<script src='https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.3.1/angular-ui-router.js'></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-local-storage/0.2.7/angular-local-storage.js"></script> -->
+
+
+	<link rel="stylesheet" type="text/css" href="lib/bootstrap.min.css">
+	<script src='lib/angular.js'></script>
+	<script src='lib/angular-route.js'></script>
+	<script src='lib/angular-ui-router.js'></script>
+	<script src='lib/angular-local-storage.js'></script>
+
+	<script src='/app.js'></script>
+	<script src='/controller/homeCtrl.js'></script>
+	<script src='/controller/appCtrl.js'></script>
+	<script src='/controller/loginCtrl.js'></script>
+	<script src='/router/routes.js'></script>
+	<script src='/service/userSvc.js'></script>
+	<script src='/service/todoSvc.js'></script>
+	<script src='/ng_websockets.js'></script>
+	<style>
+		body {
+			padding:20px;
+		}
+		.contents {
+		
+		}
+		.header {
+			height:50px;
+			color:#39B3D7;
+		}
+		.appTitle {
+			font-style: italic;
+			font-size:20pt;
+		}
+		.appTitle:hover {
+			cursor: pointer;
+		}	
+		.logout {
+			margin: 20px 20px 0 0;
+		}
+		.logout:hover {
+			text-decoration:underline;
+			cursor: pointer;
+		}
+		.completeTodo {
+			text-decoration: line-through;
+		}
+		.edit-todo {
+			margin-left:20px;
+		}
+		.edit-todo span {
+			cursor: pointer
+		}
+	</style>
+</head>
+<body>
+	<nav class='header'>
+		<span class='appTitle' ng-click='goHome()'>OurTodo</span>
+		<span class='userInfo' ng-show='currentUser'>for {{currentUser}}</span>
+		<span class='logout pull-right' ng-show='currentUser' ng-click='logout()'>logout</span>
+		<span class='logout pull-right' ng-hide='currentUser' ng-click='register()'>sign up</span>
+	</nav>
+	<div class='contents' ui-view></div>
+</body>
+</html>
