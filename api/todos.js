@@ -1,6 +1,7 @@
 var router = require('express').Router()
 var Todo = require('../models/todo')
-var bcrypt = require('bcrypt')
+//var bcrypt = require('bcrypt')
+var bcrypt = require('bcryptjs')
 var jwt = require('jwt-simple')
 var config = require('../config')
 var websockets = require('../websockets');
@@ -16,6 +17,9 @@ router.get('/:userid', function(req, res, next) {
 	// 	if (err) {return next(err)}
 	// 	res.json(user)
 	// })
+	
+
+	//Todo.find({assignee:userId}).sort({completedDate:1, createDate:-1}).exec(function(err, todos){
 	Todo.find({assignee:userId}).sort('-createDate').exec(function(err, todos){
 		if (err) {return next(err)}
 		res.json(todos);
@@ -37,7 +41,11 @@ router.post('/delete', function(req, res, next) {
 })
 router.post('/update', function(req, res, next) {
 	var todo = req.body.todo
-	console.log('todos.js - todo:',todo)
+	if (todo.completed) {
+		todo.completedDate = new Date()
+	} else {
+		todo.completedDate = null;
+	}
 	var query = {
     	"_id": todo._id
 	}
@@ -59,6 +67,8 @@ router.post('/', function(req, res, next){
 	var username = req.body.username
 	//특수 기능에 대한 피싱 필요
 	var value = req.body.value
+
+	var desc = req.body.desc
 	var valueArray = value.split(' ')
 
 	var assignee = null;
@@ -107,6 +117,7 @@ router.post('/', function(req, res, next){
 
 	var assigner = username
 	var completed = 'false'
+	var priority = 'false'
 	var createUser = username
 	var createDate = new Date();
 
@@ -117,6 +128,7 @@ router.post('/', function(req, res, next){
 		,completed : completed
 		,createUser : createUser
 		,createDate : createDate
+		,desc : desc
 	})
 	todo.save(function(err, todo){
 		if (err) {return next(err)}

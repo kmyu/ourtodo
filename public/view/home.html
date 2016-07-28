@@ -4,15 +4,19 @@
 			<input ng-model='value' class='form-control' placeholder="#with,to @id" />
 			<span class='input-group-btn'>
 				<button ng-click='add()' class='btn btn-default'>add</button>
+				<button ng-click='toggleDesc()' class='btn btn-default'><img src='images/bullet_comment.gif'></button>
 			</span>
 		</div>
+		<textarea ng-model='desc' ng-show='showDesc' placeholder="Description" class="form-control desc" rows="3"></textarea>
 	</div>
 </form>
 <div class="list">
 	<div class="checkbox" ng-repeat='todo in todos' ng-mouseover='enableEdit(todo)' ng-mouseleave='disableEdit(todo)'>
-		<label ng-class='getTodoStyle(todo.completed)'>
-			<input type='checkbox' ng-model='todo.completed' ng-change='toggleCompleted(todo)'> <span>{{todo.todo}}</span> 
+		<label ng-class='getTodoStyle(todo)'>
+			<input type='checkbox' ng-model='todo.completed' ng-change='toggleCompleted(todo)'><span class='fromUser' ng-show='currentUser != todo.assigner'>from @{{todo.assigner}} </span><span>{{todo.todo}}</span> 
 		</label>
-		<span class='edit-todo' ng-show="todo.editable"><span><img src='images/btn_srch_w.gif'></span><span ng-click='deleteTodo(todo)'><img src='images/btn_im_x_gr.gif'></span></span>
+		<span class='date'>{{getDateString(todo.completedDate) | date:'yyyy.MM.dd hh:mm'}}</span>
+		<span class='edit-todo' ng-show="todo.editable"><span ng-click='togglePriority(todo)'><img src='images/icon_check.gif'></span><span ng-click='showTodoDesc(todo)' ng-show='todo.desc'><img src='images/bullet_comment.gif'></span><span ng-click='deleteTodo(todo)'><img src='images/icon_delete_single.gif'></span></span>
+		<textarea ng-model='todo.desc' ng-show='todo.showDesc' class="form-control todoDesc" rows="3"></textarea>
 	</div>
 </div>

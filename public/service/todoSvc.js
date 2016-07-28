@@ -4,8 +4,8 @@ angular.module('app')
 	svc.getTodos = function() {
 		return $http.get('/api/todos')
 	}
-	svc.setTodos = function(username, value) {
-		return $http.post('/api/todos', {username:username, value:value}).then(function(response){
+	svc.setTodos = function(username, value, desc) {
+		return $http.post('/api/todos', {username:username, value:value, desc:desc}).then(function(response){
 			console.log('Register TODO Success',response)
 		})
 	}

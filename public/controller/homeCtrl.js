@@ -2,41 +2,62 @@ angular.module('app')
 .controller('HomeCtrl', function($scope, TodoSvc, $location, $http, localStorageService){
 
 	$http.get('/api/todos/'+localStorageService.get('currentUser').userName).success(function(todos){
-			console.log('homeCtrl.js - todos :',todos)
+			console.log('homeCtrl.js - getTodos :',todos)
 			$scope.todos = todos
 		})
+
 	$scope.add = function(){
 		var value = $scope.value
-		console.log('homeCtrl-value:',value);
+		var description = $scope.desc
+		console.log('homeCtrl.js - addValue:',value);
 		var currentUser = localStorageService.get('currentUser').userName;
-		TodoSvc.setTodos(currentUser, value)
+		TodoSvc.setTodos(currentUser, value, description)
 		.then(function(response){
 			console.log(response)
 			$scope.value = null;
+			$scope.desc = null;
+			$scope.showDesc = false;
 			//$location.path('/')
 		})	
 	}
-	$scope.getTodoStyle = function(isCompleted) {
-		if (isCompleted)
-			return 'completeTodo'
+	$scope.getTodoStyle = function(todo) {
+		var result = ''
+		if (todo.completed)
+			result +='completeTodo'
+		if (todo.priority)
+			result += ' priority_high'
+		return result
 	}
-	
+	$scope.getDateString = function(dateString) {
+		if (dateString == undefined)
+			return null;
+		var date = new Date(dateString);
+		return date.getTime();
+	}
 	$scope.toggleCompleted = function (todo, completed) {
 		console.log('homeCtrl : toggleCompleted',todo.todo);
+		$http.post('/api/todos/update', {todo:todo})
+	}
+	$scope.togglePriority = function (todo, priority) {
+		console.log('homeCtrl : togglePriority',todo.todo);
+		todo.priority = !todo.priority
 		$http.post('/api/todos/update', {todo:todo})
 	}
 	$scope.enableEdit = function(item){
 	  	item.editable = true;
 	}
-
 	$scope.disableEdit = function(item){
 	  	item.editable = false;
 	}
 	$scope.deleteTodo = function(todo) {
 		$http.post('/api/todos/delete',{todo:todo})
 	}
-	$scope.showTodo = function(todo){
-
+	$scope.showDesc = false;
+	$scope.toggleDesc = function() {
+		$scope.showDesc = !$scope.showDesc
+	}
+	$scope.showTodoDesc = function(todo) {
+		todo.showDesc  = !todo.showDesc
 	}
 	//websocket function
 	$scope.$on('ws:new_todo',function(_, todo){
