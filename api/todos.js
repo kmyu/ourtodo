@@ -99,12 +99,15 @@ router.post('/', function(req, res, next){
 			}
 		}
 	}
+	//기본적으로 모든 TODO 는 나와 @유저와 같이 할당 되지만
+	//#to 키워드가 들어가면 나는 제외 한다
+	assignee.push(username)
 	if (value.indexOf('#') != -1) {
 		for (var i=0; i < valueArray.length;i++) {
 			var valueUnit = valueArray[i]
 			if (valueUnit.indexOf('#')== 0) {
-				if (valueUnit == '#with') {
-					assignee.push(username)
+				if (valueUnit == '#to') {
+					assignee.pop()
 				}
 			}	
 		}		

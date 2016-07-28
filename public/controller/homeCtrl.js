@@ -6,6 +6,16 @@ angular.module('app')
 			$scope.todos = todos
 		})
 
+	$scope.query = 'false'
+	$scope.todoFilter = function(arg) {
+		$scope.query = arg
+	}
+	$scope.showOption = false;
+	$scope.toggleOption = function() {
+		$scope.showOption = !$scope.showOption;
+		console.log('homeCtrl:',$scope.showOption);
+	}
+
 	$scope.add = function(){
 		var value = $scope.value
 		var description = $scope.desc
