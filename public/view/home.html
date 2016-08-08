@@ -19,7 +19,7 @@
 	<div class="list">
 		<div class="checkbox" ng-repeat='todo in todos | filter: {completed:query}' ng-mouseover='enableEdit(todo)' ng-mouseleave='disableEdit(todo)'>
 			<label ng-class='getTodoStyle(todo)'>
-				<input type='checkbox' ng-model='todo.completed' ng-change='toggleCompleted(todo)'><span class='fromUser' ng-show='currentUser != todo.assigner'>from @{{todo.assigner}} </span><span>{{todo.todo}}</span> 
+				<input type='checkbox' ng-model='todo.completed' ng-change='toggleCompleted(todo)'><span class='fromUser' ng-show='currentUser != todo.assigner'>from @{{todo.assigner}} </span><span class='todoValue'>{{todo.todo}}</span> 
 			</label>
 			<span class='date'>{{getDateString(todo.completedDate) | date:'yyyy.MM.dd hh:mm'}}</span>
 			<span class='edit-todo' ng-show="todo.editable">
@@ -31,4 +31,3 @@
 		</div>
 	</div>
 </div>
-

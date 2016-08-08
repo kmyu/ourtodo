@@ -6,6 +6,16 @@ angular.module('app')
 			$scope.todos = todos
 		})
 
+	$scope.todosToClipboard = function() {
+		var todoValues = angular.element(document.getElementsByClassName('todoValue'))
+		var result = ''
+		for (var i= 0; i<todoValues.length;i++) {
+			result += todoValues[i].innerHTML+'\n'
+		}
+		console.log('homeCtrl copyClipboard : ',result)
+		window.prompt("Copy to clipboard: Ctrl+C, Enter", result);
+	}
+
 	$scope.query = 'false'
 	$scope.todoFilter = function(arg) {
 		$scope.query = arg
