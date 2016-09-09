@@ -6,18 +6,104 @@ angular.module('app')
 			$scope.todos = todos
 		})
 
-	$scope.todosToClipboard = function() {
-		var todoValues = angular.element(document.getElementsByClassName('todoValue'))
-		var result = ''
-		for (var i= 0; i<todoValues.length;i++) {
-			result += todoValues[i].innerHTML+'\n'
+	$scope.clickTag = function(tag) {
+		if ($scope.searchKey == tag) {
+			$scope.searchKey = null
+		} else {
+			$scope.searchKey = tag;
 		}
-		console.log('homeCtrl copyClipboard : ',result)
-		window.prompt("Copy to clipboard: Ctrl+C, Enter", result);
 	}
+
+	$scope.tagList = [];
+	$scope.addTagList = function(todo) {
+		$scope.findTagText(todo.todo, 0);
+		
+		console.log('tagList ', $scope.tagList);
+	}
+
+	$scope.findTagText = function(str, beginIndex) {
+
+		var startIndex = str.indexOf('[', beginIndex);
+		var endIndex = str.indexOf(']', startIndex+1);
+
+		if (startIndex == -1 || endIndex == -1)
+			return;
+
+		var result =  str.substring(startIndex, endIndex+1)
+
+		if ($scope.tagList.indexOf(result) == -1) {
+			if (result != undefined)
+				$scope.tagList.push(result);
+		}
+
+		if (str.indexOf('[', endIndex) != -1)
+			$scope.findTagText(str, endIndex);
+
+	}
+
+	$scope.filterBySearchKey = function(todo) {
+
+		if ($scope.searchKey) {
+        	return (todo.indexOf($scope.searchKey) != -1);
+		} else {
+			return true;
+		}
+    };
+
+    $scope.filterTodo = function(todo) {
+
+		$scope.addTagList(todo);
+
+		if ($scope.searchKey) {
+        	return todo.todo.indexOf($scope.searchKey) != -1 && (todo.completed.toString() == $scope.query || $scope.query == "");
+		} else {
+			return todo.completed.toString() === $scope.query || $scope.query == "";
+		}
+    };
+
+
+	$scope.copySuccess = function () {
+		//alert('Copied!');
+        console.log('Copied!');
+    };
+    $scope.copyFail = function (err) {
+		//alert('Error! ' + err);
+        console.error('Error!', err);
+    };
+	$scope.textToCopy = '';
+	$scope.copyTodo = function(todo){
+		console.log('homeCtrl copyClipboard!');
+		$scope.textToCopy = '';
+		var targetWeek = todo.completedWeek;
+		for (var i= 0; i<$scope.todos.length;i++) {
+			if ($scope.todos[i].completedWeek == targetWeek) {
+
+				var result = $scope.todos[i].todo;
+				var assignees = $scope.todos[i].assignee;
+				for (var j=0; j<assignees.length;j++) {
+					result = result.replace('@'+assignees[j]+' ','');
+					result = result.replace(' @'+assignees[j],'');
+
+					result = result.replace('#with ','');
+					result = result.replace(' #with','');
+
+					result = result.replace('#to ','');
+					result = result.replace(' #to','');
+				}
+				$scope.textToCopy = $scope.textToCopy + result + '\n' 
+				console.log('homeCtrl copyClipboard! Success', $scope.textToCopy);
+			}
+		}
+	}
+	$scope.orderBy = ''
 
 	$scope.query = 'false'
 	$scope.todoFilter = function(arg) {
+		if (arg === 'true') {
+			$scope.orderBy = '-completedDate'
+		} else {
+			$scope.orderBy = ''
+		}
 		$scope.query = arg
 	}
 	$scope.showOption = false;
@@ -54,6 +140,47 @@ angular.module('app')
 		var date = new Date(dateString);
 		return date.getTime();
 	}
+
+	var tempWeek = null;
+	$scope.getWeekOfMonth = function(todo, isFirst) {
+		if (isFirst)
+			tempWeek = null
+		if (!$scope.query) {
+			return true;
+		}
+		if (tempWeek == todo.completedWeek) {
+			return true;
+		} else {
+			tempWeek = todo.completedWeek;
+			return false;
+		}
+	}
+
+
+	// $scope.getNumberOfWeek = function(dateString) {
+	// 	if (dateString == undefined)
+	// 		return null;
+	// 	var date = new Date(dateString);
+
+	// 	var dayOfMonth = date.getDay();
+	//     var month = date.getMonth();
+	//     var year = date.getFullYear();
+	//     var checkDate = new Date(year, month, date.getDate());
+	//     var checkDateTime = checkDate.getTime();
+	//     var currentWeek = 0;
+	//     for (var i = 1; i < 32; i++) {
+	//         var loopDate = new Date(year, month, i);
+	//         if (loopDate.getDay() == dayOfMonth) {
+	//             currentWeek++;
+	//         }
+	//         if (loopDate.getTime() == checkDateTime) {
+	//             return month+1 +'M/'+currentWeek+'W';
+	//         }
+	//     }
+	// }
+
+
+
 	$scope.toggleCompleted = function (todo, completed) {
 		console.log('homeCtrl : toggleCompleted',todo.todo);
 		$http.post('/api/todos/update', {todo:todo})
@@ -74,10 +201,16 @@ angular.module('app')
 	}
 	$scope.showDesc = false;
 	$scope.toggleDesc = function() {
+
 		$scope.showDesc = !$scope.showDesc
 	}
-	$scope.showTodoDesc = function(todo) {
+	$scope.showTodoDesc = function(todo, index) {
+
 		todo.showDesc  = !todo.showDesc
+
+		
+		$("#textarea"+index).height( $("#textarea"+index)[0].scrollHeight );
+
 	}
 	//websocket function
 	$scope.$on('ws:new_todo',function(_, todo){
@@ -88,6 +221,20 @@ angular.module('app')
 				$scope.$apply(function(){
 					$scope.todos.unshift(todo)
 				})
+
+				if(todo.assigner != localStorageService.get('currentUser').userName) {	
+					if (Notification.permission !== "granted")
+					    Notification.requestPermission();
+					else {
+						var notification = new Notification('New Todo Arrived!', {
+					      icon: '/images/logo_v.png',
+					      body: todo.todo,
+					    });
+					    notification.onclick = function () {
+					      window.open("/", "OurTodo");      
+					    };
+					}
+				}
 				break;
 			}
 		}

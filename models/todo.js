@@ -9,6 +9,7 @@ var todo = db.Schema(
 		, createUser:{type:String, require:true}
 		, createDate:{type:Date, require:true}
 		, completedDate:{type:Date, require:true}
+		, completedWeek:{type:String, require:true}
 		, desc:{type:String}
 
 	}

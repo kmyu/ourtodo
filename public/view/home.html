@@ -15,19 +15,32 @@
     <a href='' ng-click='todoFilter("")' ng-style='query==""?{"font-weight":"bold","text-decoration":"underline"}:""'>all</a>
     <a href='' ng-click='todoFilter("false")' ng-style='query=="false"?{"font-weight":"bold","text-decoration":"underline"}:""'>running</a>
     <a href='' ng-click='todoFilter("true")' ng-style='query=="true"?{"font-weight":"bold","text-decoration":"underline"}:""'>complete</a>
+    <a href='' ng-click='searchView = !searchView' ng-style='searchKey?{"font-weight":"bold","color":"#39B3D7"}:""'>filter</a>
+  </div>
+  <div ng-show="searchView">
+        <input ng-model='searchKey' class='form-control' placeholder="filter" />
+        <div>
+          <span class="tagList" ng-repeat="tag in tagList" ng-click="clickTag(tag)">{{tag}}</span>
+        </div>
   </div>
 	<div class="list">
-		<div class="checkbox" ng-repeat='todo in todos | filter: {completed:query}' ng-mouseover='enableEdit(todo)' ng-mouseleave='disableEdit(todo)'>
+		<div class="checkbox" ng-repeat='todo in todos | filter:filterTodo | orderBy:orderBy' ng-mouseover='enableEdit(todo)' ng-mouseleave='disableEdit(todo)'>
+      <div class='week' ng-hide='getWeekOfMonth(todo, $first)'>
+        
+        <span>{{todo.completedWeek}}</span>
+        <span class='copyClipboard' clipboard on-copied='copySuccess()' on-error='copyFail(err)' text='textToCopy' ng-click='copyTodo(todo)'> CopyToClipboard </span>
+
+      </div> 
 			<label ng-class='getTodoStyle(todo)'>
-				<input type='checkbox' ng-model='todo.completed' ng-change='toggleCompleted(todo)'><span class='fromUser' ng-show='currentUser != todo.assigner'>from @{{todo.assigner}} </span><span class='todoValue'>{{todo.todo}}</span> 
+				<input type='checkbox' ng-model='todo.completed' ng-change='toggleCompleted(todo)'><span class='fromUser' ng-show='currentUser != todo.assigner'>@{{todo.assigner}} </span><span class='todoValue'>{{todo.todo}}</span> 
 			</label>
 			<span class='date'>{{getDateString(todo.completedDate) | date:'yyyy.MM.dd hh:mm'}}</span>
-			<span class='edit-todo' ng-show="todo.editable">
-        <span ng-click='togglePriority(todo)'><img src='images/icon_check.gif'></span>
-        <span ng-click='showTodoDesc(todo)' ng-show='todo.desc'><img src='images/bullet_comment.gif'></span>
-        <span ng-click='deleteTodo(todo)'><img src='images/icon_delete_single.gif'></span>
+			<span class='edit-todo'>
+        <span ng-show='todo.desc' ng-click='showTodoDesc(todo, $index)'><img src='images/bullet_comment.gif'></span>
+        <span ng-show="todo.editable" ng-click='togglePriority(todo)'><img src='images/icon_check.gif'></span>
+        <span ng-show="todo.editable" ng-click='deleteTodo(todo)'><img src='images/icon_delete_single.gif'></span>
       </span>
-			<textarea ng-model='todo.desc' ng-show='todo.showDesc' class="form-control todoDesc" rows="3"></textarea>
+			<textarea elastic ng-disabled='true' ng-model='todo.desc' ng-show='todo.showDesc' class="form-control todoDesc"></textarea>
 		</div>
 	</div>
 </div>

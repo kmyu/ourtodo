@@ -6,6 +6,37 @@ var jwt = require('jwt-simple')
 var config = require('../config')
 var websockets = require('../websockets');
 
+var getWeekOfMonth_notwork = function(date) {
+
+	var dayOfMonth = date.getDay();
+    var month = date.getMonth();
+    var year = date.getFullYear();
+    var checkDate = new Date(year, month, date.getDate());
+    var checkDateTime = checkDate.getTime();
+    var currentWeek = 0;
+    for (var i = 1; i < 32; i++) {
+        var loopDate = new Date(year, month, i);
+        if (loopDate.getDay() == dayOfMonth) {
+            currentWeek++;
+        }
+        if (loopDate.getTime() == checkDateTime) {
+            return currentWeek+'W/'+ (month+1) +'M';
+        }
+    }
+}
+
+var getWeekOfMonth_new = function(date) {
+
+	var day = date.getDate()
+    var month = date.getMonth();
+
+    //get weekend date
+    day += (date.getDay() == 0 ? 0 : 7 - date.getDay());
+
+    return Math.ceil(parseFloat(day) / 7) + 'W/' + (month+1) +'M';
+}
+
+
 router.get('/:userid', function(req, res, next) {
 	console.log('todos.js - /',req.params.userid)
 	var userId = req.params.userid
@@ -19,9 +50,18 @@ router.get('/:userid', function(req, res, next) {
 	// })
 	
 
-	//Todo.find({assignee:userId}).sort({completedDate:1, createDate:-1}).exec(function(err, todos){
-	Todo.find({assignee:userId}).sort('-createDate').exec(function(err, todos){
+	Todo.find({assignee:userId}).sort({createDate:-1}).exec(function(err, todos){
+	//Todo.find({assignee:userId}).sort({createDate:-1, completedDate:-1}).exec(function(err, todos){
+	//Todo.find({assignee:userId}).sort('-createDate').exec(function(err, todos){
 		if (err) {return next(err)}
+
+			for(var i = 0; i < todos.length; i++) {
+				var todo = todos[i];
+				if (todo.completedDate) {
+					todo.completedWeek = getWeekOfMonth_new(todo.completedDate);
+				}
+			}
+
 		res.json(todos);
 	})
 })
@@ -43,8 +83,10 @@ router.post('/update', function(req, res, next) {
 	var todo = req.body.todo
 	if (todo.completed) {
 		todo.completedDate = new Date()
+		//todo.completedWeek = getWeekOfMonth(todo.completedDate);
 	} else {
 		todo.completedDate = null;
+		todo.completedWeek = null;
 	}
 	var query = {
     	"_id": todo._id
