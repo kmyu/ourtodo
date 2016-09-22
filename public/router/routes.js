@@ -12,10 +12,22 @@ app.config(['$stateProvider', '$urlRouterProvider','$locationProvider', function
 		templateUrl:'view/login/register.html',
 		controller:'LoginCtrl'
 	})	
-	.state('home',{
+	.state('todo',{
 		url:'/',
-		templateUrl:'view/home.html',
-		controller:'HomeCtrl',
+		templateUrl:'view/todo.html',
+		controller:'TodoCtrl',
+		authenticate: true
+	})
+	.state('message',{
+		url:'/message',
+		templateUrl:'view/message.html',
+		controller:'MessageCtrl',
+		authenticate: true
+	})
+	.state('note',{
+		url:'/note',
+		templateUrl:'view/note.html',
+		controller:'NoteCtrl',
 		authenticate: true
 	})
 	// .state('detail',{

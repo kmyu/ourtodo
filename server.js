@@ -14,6 +14,7 @@ app.use('/api/sessions', require('./api/sessions'))
 app.use('/api/users', require('./api/users'))
 
 app.use('/api/todos', require('./api/todos'))
+app.use('/api/messages', require('./api/messages'))
 
 app.use(express.static(path.join(__dirname, 'public')))
 

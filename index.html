@@ -2,7 +2,7 @@
 <meta name="viewport" content="width=device-width, user-scalable=no">
 <html ng-app='app' ng-controller='appCtrl'>
 <head>
-	<title>OurTodo</title>
+	<title>{{mainTitle}}</title>
 
 	<!-- <link rel="stylesheet" type="text/css" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
 	<script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.2.18/angular.js'></script>
@@ -20,12 +20,15 @@
 	<script src="lib/angular-clipboard.js"></script>
 
 	<script src='/app.js'></script>
-	<script src='/controller/homeCtrl.js'></script>
+	<script src='/controller/todoCtrl.js'></script>
+	<script src='/controller/messageCtrl.js'></script>
+	<script src='/controller/noteCtrl.js'></script>
 	<script src='/controller/appCtrl.js'></script>
 	<script src='/controller/loginCtrl.js'></script>
 	<script src='/router/routes.js'></script>
 	<script src='/service/userSvc.js'></script>
 	<script src='/service/todoSvc.js'></script>
+	<script src='/service/messageSvc.js'></script>
 	<script src='/ng_websockets.js'></script>
 	<style>
 		hr {
@@ -39,11 +42,11 @@
 		}
 		.list {
 			margin-top: 20px;
+			font-weight: 400;
 		}
 		.header {
 			height:50px;
 			color:#39B3D7;
-			border-bottom:1px solid #39B3D7;
 		}
 		.appTitle {
 			font-style: italic;
@@ -56,8 +59,8 @@
 			margin: 20px 20px 0 0;
 		}
 		.logout:hover {
-			text-decoration:underline;
 			cursor: pointer;
+			color:#0078FF;
 		}
 		.completeTodo {
 			text-decoration: line-through;
@@ -65,10 +68,10 @@
 		.priority_high {
     		color: red;
 		}
-		.edit-todo {
+		.edit-todo, .edit-message {
 			margin-left:20px;
 		}
-		.edit-todo span {
+		.edit-todo span, .edit-message span {
 			cursor: pointer
 		}
 		.fromUser {
@@ -85,7 +88,7 @@
 			font-size :10pt;
 			cursor: pointer;
 		}
-		.todoFilter a{
+		.todoFilter a, .messageType a{
 			color :gray;
 			font-size :10pt;
 			margin-right: 5px;
@@ -109,22 +112,52 @@
 			color :gray;
 			font-size :5pt;
 		}
-		.copyClipboard {
+		.day {
+			border-bottom: 1px dotted #39B3D7;
+			padding-left:0;
+			color :gray;
+			font-size :5pt;
+		}
+		.copyClipboard, .removeMessage {
 			float:right;
 			font-size :8pt;
 		}
-		.copyClipboard:hover {
+		.copyClipboard:hover , .removeMessage:hover {
 			text-decoration:underline;
 			cursor: pointer;
+		}
+		.menu {
+			padding-bottom:3px;
+			border-bottom:1px solid #39B3D7;
+		}
+		.menu span{
+			font-size :10pt;
+			color:#39B3D7;
+			margin-right:20px;
+		}
+		.menu span:hover{
+			cursor: pointer;
+			color:#0078FF;
+		}
+		.menu .badge-notify{
+			margin-left: 5px;
+		   	background:red;
+		   	color:#fff;
+			font-size :8pt;
 		}
 	</style>
 </head>
 <body>
 	<nav class='header'>
-		<span class='appTitle' ng-click='goHome()'>OurTodo</span>
+		<span class='appTitle' ng-click='goTodo()'>{{mainTitle}}</span>
 		<span class='userInfo' ng-show='currentUser'>for {{currentUser}}</span>
 		<span class='logout pull-right' ng-show='currentUser' ng-click='logout()'>logout</span>
 		<span class='logout pull-right' ng-hide='currentUser' ng-click='register()'>sign up</span>
+	</nav>
+	<nav ng-show='currentUser' class='menu'>
+		<span ng-click='goTodo()' ng-style='mainTitle == "OurTodo" && {"color":"#0078FF"}'>Todo</span>
+		<span ng-show='false' ng-click='goNote()' ng-style='mainTitle == "OurNote" && {"color":"#0078FF"}'>Note</span>
+		<span ng-click='goMessage()' ng-style='mainTitle == "OurMessage" && {"color":"#0078FF"}'>Message<span ng-show='newMessageCount != 0' class="badge badge-notify">{{newMessageCount}}</span></span>
 	</nav>
 	<div class='contents' ui-view></div>
 </body>

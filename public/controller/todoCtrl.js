@@ -2,7 +2,7 @@ angular.module('app')
 .controller('TodoCtrl', function($scope, TodoSvc, $location, $http, localStorageService){
 
 	$http.get('/api/todos/'+localStorageService.get('currentUser').userName).success(function(todos){
-			console.log('homeCtrl.js - getTodos :',todos)
+			console.log('TodoCtrl.js - getTodos :',todos)
 			$scope.todos = todos
 		})
 
@@ -18,7 +18,7 @@ angular.module('app')
 	$scope.addTagList = function(todo) {
 		$scope.findTagText(todo.todo, 0);
 		
-		console.log('tagList ', $scope.tagList);
+		//console.log('tagList ', $scope.tagList);
 	}
 
 	$scope.findTagText = function(str, beginIndex) {
@@ -134,12 +134,12 @@ angular.module('app')
 			result += ' priority_high'
 		return result
 	}
-	$scope.getDateString = function(dateString) {
-		if (dateString == undefined)
-			return null;
-		var date = new Date(dateString);
-		return date.getTime();
-	}
+	// $scope.getDateString = function(dateString) {
+	// 	if (dateString == undefined)
+	// 		return null;
+	// 	var date = new Date(dateString);
+	// 	return date.getTime();
+	// }
 
 	var tempWeek = null;
 	$scope.getWeekOfMonth = function(todo, isFirst) {
@@ -190,12 +190,12 @@ angular.module('app')
 		todo.priority = !todo.priority
 		$http.post('/api/todos/update', {todo:todo})
 	}
-	$scope.enableEdit = function(item){
-	  	item.editable = true;
-	}
-	$scope.disableEdit = function(item){
-	  	item.editable = false;
-	}
+	// $scope.enableEdit = function(item){
+	//   	item.editable = true;
+	// }
+	// $scope.disableEdit = function(item){
+	//   	item.editable = false;
+	// }
 	$scope.deleteTodo = function(todo) {
 		$http.post('/api/todos/delete',{todo:todo})
 	}
@@ -221,20 +221,6 @@ angular.module('app')
 				$scope.$apply(function(){
 					$scope.todos.unshift(todo)
 				})
-
-				if(todo.assigner != localStorageService.get('currentUser').userName) {	
-					if (Notification.permission !== "granted")
-					    Notification.requestPermission();
-					else {
-						var notification = new Notification('New Todo Arrived!', {
-					      icon: '/images/logo_v.png',
-					      body: todo.todo,
-					    });
-					    notification.onclick = function () {
-					      window.open("/", "OurTodo");      
-					    };
-					}
-				}
 				break;
 			}
 		}

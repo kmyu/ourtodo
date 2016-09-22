@@ -10,7 +10,7 @@ angular.module('app')
 			$timeout(connect, 10*1000)
 		}
 		connection.onmessage = function(e){
-			console.log(e)
+			console.log('OnMessage',e)
 			var payload = JSON.parse(e.data)
 			$rootScope.$broadcast('ws:' + payload.topic, payload.data);
 		}

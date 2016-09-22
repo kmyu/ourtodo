@@ -1,0 +1,38 @@
+<div class='MessageContents'>
+	<form role='form'>
+    <div class='form-group'>
+      <div class='input-group'>
+        <input ng-model='message' class='form-control' placeholder="@id" />
+        <span class='input-group-btn'>
+          <button ng-click='send()' class='btn btn-default'>send</button>
+          <button ng-click='toggleDesc()' class='btn btn-default'><img src='images/bullet_comment.gif'></button>
+        </span>
+      </div>
+      <textarea ng-model='messageDesc' ng-show='showDesc' placeholder="Message Description" class="form-control desc" rows="3"></textarea>
+    </div>
+  </form>
+  <div class='messageType'>
+    <a href='' ng-click='changeMessageType("receive")' ng-style='messageType=="receive"?{"font-weight":"bold","text-decoration":"underline"}:""'>receive</a>
+    <a href='' ng-click='changeMessageType("send")' ng-style='messageType=="send"?{"font-weight":"bold","text-decoration":"underline"}:""'>send</a>
+  </div>
+  <div class="list">
+    <div ng-repeat='message in messages| filter:messageTypeFilter' ng-mouseover='enableEdit(message)' ng-mouseleave='disableEdit(message)'>
+
+
+<!--       <div class='day' ng-hide='getDay(message, $first)'>
+        <span>{{message.messageDateDay}}</span>
+        <span class='removeMessage' ng-click='removeByDay(message.messageDateDay)'> RemoveAll </span>
+      </div>  -->
+
+
+      <span ng-style='{"cursor":"pointer"}' ng-click='clickFromUser(message.sender);readMessage(message)' ng-show='messageType=="receive"' class='fromUser'>@{{message.sender}} </span>
+      <span ng-click='readMessage(message)' ng-style='!message.readYn && message.receiver[0] === currentUser && {"color":"#39B3D7","cursor":"pointer"}'>{{message.message}}</span> 
+      <span class='date'>{{getDateString(message.messageDate) | date:'yyyy.MM.dd hh:mm'}}</span>
+      <span class='edit-message'>
+        <span ng-show='message.messageDesc' ng-click='showMessageDesc(message, $index)'><img src='images/bullet_comment.gif'></span>
+        <span ng-show='message.editable' ng-click='deleteMessage(message)'><img src='images/icon_delete_single.gif'></span>
+      </span>
+      <textarea elastic ng-disabled='true' ng-model='message.messageDesc' ng-show='message.showDesc' class="form-control messageDesc"></textarea>
+    </div>
+  </div>
+</div>

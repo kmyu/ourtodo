@@ -36,10 +36,10 @@
 			</label>
 			<span class='date'>{{getDateString(todo.completedDate) | date:'yyyy.MM.dd hh:mm'}}</span>
 			<span class='edit-todo'>
-        <span ng-show='todo.desc' ng-click='showTodoDesc(todo, $index)'><img src='images/bullet_comment.gif'></span>
-        <span ng-show="todo.editable" ng-click='togglePriority(todo)'><img src='images/icon_check.gif'></span>
-        <span ng-show="todo.editable" ng-click='deleteTodo(todo)'><img src='images/icon_delete_single.gif'></span>
-      </span>
+		        <span ng-show='todo.desc' ng-click='showTodoDesc(todo, $index)'><img src='images/bullet_comment.gif'></span>
+		        <span ng-show="todo.editable" ng-click='togglePriority(todo)'><img src='images/icon_check.gif'></span>
+		        <span ng-show="todo.editable" ng-click='deleteTodo(todo)'><img src='images/icon_delete_single.gif'></span>
+		    </span>
 			<textarea elastic ng-disabled='true' ng-model='todo.desc' ng-show='todo.showDesc' class="form-control todoDesc"></textarea>
 		</div>
 	</div>
